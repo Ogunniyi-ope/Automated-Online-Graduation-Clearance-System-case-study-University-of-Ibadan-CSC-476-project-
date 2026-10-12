@@ -1,0 +1,44 @@
+{% extends 'base.html' %}{% block title %}My clearance{% endblock %}
+{% block body %}
+<div class="card"><h2>My Clearance Status</h2>
+<p>{{ student.full_name }} &middot; {{ student.matric_no }} &middot; {{ student.department }}, {{ student.faculty }} &middot; {{ student.level }} level ({{ student.session }})</p>
+{% if not req %}
+  {% if can_apply %}<p>You are eligible to apply for graduation clearance.</p>
+  <form method="post" action="{{ url_for('student.apply') }}"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><button class="btn" type="submit">Apply for clearance</button></form>
+  {% else %}<p><span class="badge bad">Not eligible</span> {{ reason }}</p>{% endif %}
+{% else %}
+  <p>Overall status: <span class="badge {{ req.overall_status }}">{% if req.overall_status == 'cleared' %}Cleared{% else %}In progress &ndash; {{ approved }} of {{ steps|length }} units cleared{% endif %}</span></p>
+  <div class="steps">{% for s in steps %}<div class="{{ s.status }}">{{ s.unit_name }}</div>{% endfor %}</div>
+{% endif %}</div>
+
+{% if req and req.overall_status == 'cleared' %}
+<div class="card cert"><div class="muted">UNIVERSITY OF IBADAN</div><h1>Graduation Clearance Certificate</h1>
+<p>{{ student.full_name }} ({{ student.matric_no }}) has been cleared by all {{ steps|length }} units.</p>
+<div class="qr">{{ qr|safe }}</div>
+<p class="muted">Certificate no. {{ req.certificate_no }} &middot; Issued {{ req.cleared_at }}</p>
+<a class="btn" href="{{ url_for('student.certificate_pdf') }}">Download PDF</a></div>
+{% endif %}
+
+{% if req %}
+<div class="card"><h2>Unit-by-unit progress</h2>
+<table><tr><th>Unit</th><th>Status</th><th>Officer remark</th><th>Date</th><th></th></tr>
+{% for s in steps %}<tr><td>{{ s.sequence_no }}. {{ s.unit_name }}</td>
+<td><span class="badge {{ s.status }}">{{ s.status|replace('_',' ')|capitalize }}</span></td>
+<td>{{ s.remark or '' }}</td><td>{{ s.decided_at or '' }}</td>
+<td>{% if s.status == 'rejected' %}<form method="post" action="{{ url_for('student.resubmit', step_id=s.step_id) }}"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><button class="btn small" type="submit">I have resolved this &ndash; resubmit</button></form>{% endif %}</td></tr>{% endfor %}</table></div>
+{% endif %}
+
+{% if obligations %}
+<div class="card"><h2>My obligations</h2><table><tr><th>Unit</th><th>Description</th><th>Amount (&#8358;)</th><th>Status</th></tr>
+{% for o in obligations %}<tr><td>{{ o.unit_name }}</td><td>{{ o.description }}</td><td>{{ '{:,.2f}'.format(o.amount) }}</td><td><span class="badge {{ 'ok' if o.is_cleared else 'bad' }}">{{ 'Cleared' if o.is_cleared else 'Outstanding' }}</span></td></tr>{% endfor %}</table></div>
+{% endif %}
+
+{% if req %}
+<div class="card"><h2>Supporting documents</h2>
+<form method="post" action="{{ url_for('student.upload') }}" enctype="multipart/form-data"><input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+<div class="row"><div><label for="doc_type">Document type</label><select id="doc_type" name="doc_type">{% for t in doc_types %}<option>{{ t }}</option>{% endfor %}</select></div>
+<div><label for="file">File (PDF, PNG or JPG, max 2 MB)</label><input id="file" type="file" name="file" required></div>
+<div><button class="btn" type="submit">Upload</button></div></div></form>
+{% if docs %}<table><tr><th>File</th><th>Type</th><th>Uploaded</th></tr>{% for d in docs %}<tr><td>{{ d.original_name }}</td><td>{{ d.doc_type }}</td><td>{{ d.uploaded_at }}</td></tr>{% endfor %}</table>{% endif %}</div>
+{% endif %}
+{% endblock %}

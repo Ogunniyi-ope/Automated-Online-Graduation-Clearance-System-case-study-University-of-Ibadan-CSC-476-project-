@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}Graduation Clearance Portal{% endblock %} | University of Ibadan</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"></head>
+<body>
+<div class="bar"><span class="brand">University of Ibadan | Graduation Clearance Portal</span>
+<span>
+{% if current_user %}
+  {% if current_user.role == 'student' %}<a href="{{ url_for('student.dashboard') }}">My clearance</a>{% endif %}
+  {% if current_user.role in ('officer','records') %}<a href="{{ url_for('officer.queue') }}">Pending requests</a><a href="{{ url_for('officer.students') }}">Find student</a>{% endif %}
+  {% if current_user.role == 'records' %}<a href="{{ url_for('officer.cleared') }}">Cleared list</a>{% endif %}
+  {% if current_user.role in ('admin','records') %}<a href="{{ url_for('admin.dashboard') }}">Reports</a>{% endif %}
+  {% if current_user.role == 'admin' %}<a href="{{ url_for('admin.users') }}">Users</a><a href="{{ url_for('admin.units') }}">Units</a><a href="{{ url_for('admin.audit_log') }}">Audit log</a>{% endif %}
+  <a href="{{ url_for('auth.notifications') }}">Notifications</a><a href="{{ url_for('auth.change_password') }}">Password</a>
+  <span>{{ current_user.full_name }}{% if current_user.unit_name %} ({{ current_user.unit_name }}){% endif %}</span>
+  <form method="post" action="{{ url_for('auth.logout') }}"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"> <button class="linkbtn" type="submit">Log out</button></form>
+{% else %}<a href="{{ url_for('public.verify') }}">Verify a certificate</a>{% endif %}
+</span></div>
+<div class="wrap">
+{% with msgs = get_flashed_messages(with_categories=true) %}{% for cat, m in msgs %}<div class="flash {{ cat }}">{{ m }}</div>{% endfor %}{% endwith %}
+{% block body %}{% endblock %}
+</div></body></html>

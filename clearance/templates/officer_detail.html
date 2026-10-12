@@ -1,0 +1,21 @@
+{% extends 'base.html' %}{% block title %}Review request{% endblock %}
+{% block body %}
+<div class="card"><h2>{{ step.unit_name }} &ndash; request from {{ step.full_name }} ({{ step.matric_no }})</h2>
+<p>{{ step.department }}, {{ step.faculty }} &middot; {{ step.level }} level &middot; {{ step.session }}{% if step.hall %} &middot; {{ step.hall }}{% endif %}</p>
+<p>Status of this step: <span class="badge {{ step.status }}">{{ step.status|replace('_',' ')|capitalize }}</span></p></div>
+<div class="card"><h2>Obligations recorded by your unit</h2>
+<table><tr><th>Description</th><th>Amount (&#8358;)</th><th>Status</th><th></th></tr>
+{% for o in obligations %}<tr><td>{{ o.description }}</td><td>{{ '{:,.2f}'.format(o.amount) }}</td><td><span class="badge {{ 'ok' if o.is_cleared else 'bad' }}">{{ 'Cleared' if o.is_cleared else 'Outstanding' }}</span></td>
+<td>{% if not o.is_cleared %}<form method="post" action="{{ url_for('officer.clear_obligation', oid=o.obligation_id) }}"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><input type="hidden" name="back" value="{{ url_for('officer.detail', step_id=step.step_id) }}"><button class="btn small ok" type="submit">Mark cleared</button></form>{% endif %}</td></tr>
+{% else %}<tr><td colspan="4" class="muted">None recorded.</td></tr>{% endfor %}</table>
+<form method="post" action="{{ url_for('officer.add_obligation') }}"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><input type="hidden" name="matric_no" value="{{ step.matric_no }}"><input type="hidden" name="back" value="{{ url_for('officer.detail', step_id=step.step_id) }}">
+<div class="row"><div><label for="description">Add obligation</label><input id="description" type="text" name="description" maxlength="200" required></div><div><label for="amount">Amount (&#8358;)</label><input id="amount" type="number" name="amount" min="0" step="0.01" value="0"></div><div><button class="btn small" type="submit">Add</button></div></div></form></div>
+<div class="card"><h2>Supporting documents</h2>
+{% for d in docs %}<p><a href="{{ url_for('officer.document', doc_id=d.doc_id) }}">{{ d.original_name }}</a> <span class="muted">({{ d.doc_type }}, {{ d.uploaded_at }})</span></p>{% else %}<p class="muted">No documents uploaded.</p>{% endfor %}</div>
+{% if step.status == 'pending' %}
+<div class="card"><h2>Decision</h2>
+<form method="post" action="{{ url_for('officer.decide', step_id=step.step_id) }}"><input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+<label for="remark">Remark to student (compulsory when rejecting)</label><textarea id="remark" name="remark" rows="3" maxlength="500"></textarea>
+<button class="btn ok" type="submit" name="decision" value="approve">Approve</button> <button class="btn bad" type="submit" name="decision" value="reject">Reject</button></form></div>
+{% else %}<div class="card"><p class="muted">This step is not awaiting a decision.{% if step.remark %} Remark: {{ step.remark }}{% endif %}</p></div>{% endif %}
+{% endblock %}

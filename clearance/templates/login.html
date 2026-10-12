@@ -1,0 +1,9 @@
+{% extends 'base.html' %}{% block title %}Sign in{% endblock %}
+{% block body %}
+<div class="card narrow"><h2>Sign in</h2>
+<form method="post" autocomplete="off"><input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+<label for="username">Matriculation number / Staff ID</label><input id="username" type="text" name="username" required autofocus>
+<label for="password">Password</label><input id="password" type="password" name="password" required>
+<button class="btn" type="submit">Log in</button></form>
+<p class="muted">Employers and institutions can <a href="{{ url_for('public.verify') }}">verify a clearance certificate</a> without signing in.</p></div>
+{% endblock %}

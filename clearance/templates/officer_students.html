@@ -1,0 +1,8 @@
+{% extends 'base.html' %}{% block title %}Find student{% endblock %}
+{% block body %}<div class="card"><h2>Find a student and record an obligation</h2>
+<form method="get"><div class="row"><div><label for="q">Matric number or name</label><input id="q" type="text" name="q" value="{{ q }}" required></div><div><button class="btn" type="submit">Search</button></div></div></form>
+{% if q %}<table><tr><th>Matric no.</th><th>Name</th><th>Department</th><th>Record obligation for my unit</th></tr>
+{% for r in rows %}<tr><td>{{ r.matric_no }}</td><td>{{ r.full_name }}</td><td>{{ r.department }}</td><td>
+<form method="post" action="{{ url_for('officer.add_obligation') }}"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><input type="hidden" name="matric_no" value="{{ r.matric_no }}"><input type="hidden" name="back" value="/officer/students?q={{ q|urlencode }}">
+<div class="row"><input type="text" name="description" placeholder="Description" maxlength="200" required><input type="number" name="amount" min="0" step="0.01" value="0"><button class="btn small" type="submit">Add</button></div></form></td></tr>
+{% else %}<tr><td colspan="4" class="muted">No student found.</td></tr>{% endfor %}</table>{% endif %}</div>{% endblock %}

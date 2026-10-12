@@ -1,0 +1,10 @@
+{% extends 'base.html' %}{% block title %}Units{% endblock %}
+{% block body %}<div class="card"><h2>Clearance units and order of approval</h2>
+<p class="muted">Changes apply to requests submitted after the change; requests already in progress keep their original order.</p>
+<table><tr><th>Unit</th><th>Order</th><th>Active</th><th></th></tr>
+{% for u in units %}<tr><td>{{ u.unit_name }}</td>
+<td><input form="u{{ u.unit_id }}" type="number" name="sequence_no" value="{{ u.sequence_no }}" min="1"></td>
+<td><input form="u{{ u.unit_id }}" type="checkbox" name="is_active" {{ 'checked' if u.is_active }}></td>
+<td><form id="u{{ u.unit_id }}" method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><input type="hidden" name="action" value="update"><input type="hidden" name="unit_id" value="{{ u.unit_id }}"><button class="btn small" type="submit">Save</button></form></td></tr>{% endfor %}</table></div>
+<div class="card"><h2>Add a unit</h2><form method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><input type="hidden" name="action" value="add">
+<div class="row"><div><label for="unit_name">Name</label><input id="unit_name" type="text" name="unit_name" required></div><div><label for="sequence_no">Order number</label><input id="sequence_no" type="number" name="sequence_no" min="1" required></div><div><button class="btn" type="submit">Add</button></div></div></form></div>{% endblock %}

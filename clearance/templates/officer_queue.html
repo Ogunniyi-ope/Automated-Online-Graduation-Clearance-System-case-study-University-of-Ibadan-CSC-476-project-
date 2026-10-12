@@ -1,0 +1,12 @@
+{% extends 'base.html' %}{% block title %}Pending requests{% endblock %}
+{% block body %}
+<div class="card"><h2>Pending requests ({{ pending|length }}) &ndash; {{ current_user.unit_name }}</h2>
+<table><tr><th>Matric no.</th><th>Name</th><th>Department</th><th>Obligations</th><th>Waiting since</th><th></th></tr>
+{% for p in pending %}<tr><td>{{ p.matric_no }}</td><td>{{ p.full_name }}</td><td>{{ p.department }}</td>
+<td>{% if p.owed %}<span class="badge bad">{{ p.owed }} outstanding</span>{% else %}<span class="badge ok">None</span>{% endif %}</td>
+<td>{{ p.opened_at }}</td><td><a class="btn small" href="{{ url_for('officer.detail', step_id=p.step_id) }}">Review</a></td></tr>
+{% else %}<tr><td colspan="6" class="muted">No requests are waiting for your unit.</td></tr>{% endfor %}</table></div>
+<div class="card"><h2>Recent decisions</h2><table><tr><th>Matric no.</th><th>Name</th><th>Decision</th><th>Remark</th><th>When</th></tr>
+{% for r in recent %}<tr><td>{{ r.matric_no }}</td><td>{{ r.full_name }}</td><td><span class="badge {{ r.status }}">{{ r.status|capitalize }}</span></td><td>{{ r.remark or '' }}</td><td>{{ r.decided_at }}</td></tr>
+{% else %}<tr><td colspan="5" class="muted">No decisions yet.</td></tr>{% endfor %}</table></div>
+{% endblock %}

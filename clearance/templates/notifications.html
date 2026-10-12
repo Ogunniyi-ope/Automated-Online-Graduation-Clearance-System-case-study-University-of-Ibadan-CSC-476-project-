@@ -1,0 +1,5 @@
+{% extends 'base.html' %}{% block title %}Notifications{% endblock %}
+{% block body %}<div class="card"><h2>Notifications</h2>
+<table><tr><th>When</th><th>Channel</th><th>Message</th></tr>
+{% for r in rows %}<tr><td>{{ r.sent_at }}</td><td>{{ r.channel }}{% if r.channel != 'in_app' %} <span class="muted">({{ r.delivery }})</span>{% endif %}</td><td>{{ r.message }}</td></tr>
+{% else %}<tr><td colspan="3" class="muted">No notifications yet.</td></tr>{% endfor %}</table></div>{% endblock %}

@@ -1,0 +1,7 @@
+{% extends 'base.html' %}{% block title %}Reports{% endblock %}
+{% block body %}<h1>Clearance reports</h1>
+<div class="grid"><div class="stat"><b>{{ stats.students }}</b>Students</div><div class="stat"><b>{{ stats.requests }}</b>Requests submitted</div><div class="stat"><b>{{ stats.cleared }}</b>Fully cleared</div><div class="stat"><b>{{ stats.pending }}</b>Steps pending</div><div class="stat"><b>{{ stats.rejected }}</b>Steps rejected</div></div>
+<div class="card"><h2>Progress and processing time per unit</h2>
+<table><tr><th>Order</th><th>Unit</th><th>Approved</th><th>Pending</th><th>Rejected</th><th>Average days to decide</th></tr>
+{% for u in per_unit %}<tr><td>{{ u.sequence_no }}</td><td>{{ u.unit_name }}</td><td>{{ u.approved or 0 }}</td><td>{{ u.pending or 0 }}</td><td>{{ u.rejected or 0 }}</td><td>{{ u.avg_days if u.avg_days is not none else '-' }}</td></tr>{% endfor %}</table>
+<p><a class="btn" href="{{ url_for('admin.report_csv') }}">Export student list (CSV)</a></p></div>{% endblock %}

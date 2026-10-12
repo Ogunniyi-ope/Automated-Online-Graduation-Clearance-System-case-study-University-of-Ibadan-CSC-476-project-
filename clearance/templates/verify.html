@@ -1,0 +1,13 @@
+{% extends 'base.html' %}{% block title %}Verify certificate{% endblock %}
+{% block body %}<div class="card"><h2>Verify a graduation clearance certificate</h2>
+<form method="get"><label for="no">Certificate number (e.g. UI/CLR/2026/000123-9F3A7C21)</label>
+<input id="no" type="text" name="no" value="{{ number }}" required><button class="btn" type="submit">Verify</button></form></div>
+{% if number %}{% if result %}
+<div class="card"><span class="badge ok">GENUINE</span>
+<h2>Certificate confirmed</h2>
+<table><tr><th>Name</th><td>{{ result.full_name }}</td></tr><tr><th>Matriculation no.</th><td>{{ result.matric_no }}</td></tr>
+<tr><th>Department</th><td>{{ result.department }}, {{ result.faculty }}</td></tr><tr><th>Session</th><td>{{ result.session }}</td></tr>
+<tr><th>Certificate no.</th><td>{{ result.certificate_no }}</td></tr><tr><th>Issued</th><td>{{ result.cleared_at }}</td></tr></table></div>
+{% else %}<div class="card"><span class="badge bad">NOT VERIFIED</span><h2>No genuine certificate matches this number</h2>
+<p>Check the number and try again. A number that has been altered, or was never issued, cannot be verified.</p></div>{% endif %}{% endif %}
+{% endblock %}

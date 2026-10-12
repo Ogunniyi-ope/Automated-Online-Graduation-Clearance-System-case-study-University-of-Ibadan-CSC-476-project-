@@ -1,0 +1,15 @@
+{% extends 'base.html' %}{% block title %}Users{% endblock %}
+{% block body %}<div class="card"><h2>Add a user</h2>
+<form method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+<div class="row"><div><label for="username">Matric no. / Staff ID</label><input id="username" type="text" name="username" required></div>
+<div><label for="full_name">Full name</label><input id="full_name" type="text" name="full_name" required></div>
+<div><label for="role">Role</label><select id="role" name="role"><option>student</option><option>officer</option><option>records</option><option>admin</option></select></div>
+<div><label for="unit_id">Unit (officers)</label><select id="unit_id" name="unit_id"><option value="">-</option>{% for u in units %}<option value="{{ u.unit_id }}">{{ u.unit_name }}</option>{% endfor %}</select></div></div>
+<div class="row"><div><label for="email">E-mail</label><input id="email" type="email" name="email"></div><div><label for="phone">Phone</label><input id="phone" type="text" name="phone"></div>
+<div><label for="password">Initial password</label><input id="password" type="password" name="password" required></div></div>
+<div class="row"><div><label for="faculty">Faculty (students)</label><input id="faculty" type="text" name="faculty"></div><div><label for="department">Department (students)</label><input id="department" type="text" name="department"></div>
+<div><label for="level">Level</label><input id="level" type="number" name="level" value="400"></div><div><label for="session">Session</label><input id="session" type="text" name="session" value="2025/2026"></div></div>
+<button class="btn" type="submit">Create user</button></form></div>
+<div class="card"><h2>Users</h2><table><tr><th>ID</th><th>Name</th><th>Role</th><th>Unit</th><th>Active</th><th></th></tr>
+{% for u in rows %}<tr><td>{{ u.username }}</td><td>{{ u.full_name }}</td><td>{{ u.role }}</td><td>{{ u.unit_name or '' }}</td><td>{{ 'Yes' if u.is_active else 'No' }}</td>
+<td><form method="post" action="{{ url_for('admin.toggle_user', uid=u.user_id) }}"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><button class="btn small" type="submit">{{ 'Deactivate' if u.is_active else 'Activate' }}</button></form></td></tr>{% endfor %}</table></div>{% endblock %}

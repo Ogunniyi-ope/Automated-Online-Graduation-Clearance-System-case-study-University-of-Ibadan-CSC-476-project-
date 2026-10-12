@@ -1,0 +1,6 @@
+{% extends 'base.html' %}{% block title %}Cleared students{% endblock %}
+{% block body %}<div class="card"><h2>Cleared students ({{ rows|length }})</h2>
+<table><tr><th>Matric no.</th><th>Name</th><th>Department</th><th>Certificate no.</th><th>Cleared</th></tr>
+{% for r in rows %}<tr><td>{{ r.matric_no }}</td><td>{{ r.full_name }}</td><td>{{ r.department }}, {{ r.faculty }}</td><td>{{ r.certificate_no }}</td><td>{{ r.cleared_at }}</td></tr>
+{% else %}<tr><td colspan="5" class="muted">No student has been fully cleared yet.</td></tr>{% endfor %}</table>
+<p><a class="btn" href="{{ url_for('admin.report_csv') }}">Export all (CSV)</a></p></div>{% endblock %}
